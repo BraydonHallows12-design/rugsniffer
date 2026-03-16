@@ -1,0 +1,1154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RugSniffer — Solana Token Security</title>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0c0c0e;
+  --surface:#141416;
+  --card:#1a1a1e;
+  --card2:#1f1f24;
+  --border:#2a2a30;
+  --border2:#333338;
+  --text:#f0f0f2;
+  --text2:#9898a8;
+  --text3:#55555f;
+  --green:#22c55e;
+  --green-dim:rgba(34,197,94,0.12);
+  --green-border:rgba(34,197,94,0.25);
+  --amber:#f59e0b;
+  --amber-dim:rgba(245,158,11,0.12);
+  --amber-border:rgba(245,158,11,0.25);
+  --red:#ef4444;
+  --red-dim:rgba(239,68,68,0.12);
+  --red-border:rgba(239,68,68,0.25);
+  --purple:#a78bfa;
+  --purple-dim:rgba(167,139,250,0.12);
+  --purple-border:rgba(167,139,250,0.25);
+  --blue:#60a5fa;
+  --r:10px;
+  --r2:14px;
+}
+body{background:var(--bg);color:var(--text);font-family:'Geist',sans-serif;min-height:100vh;-webkit-font-smoothing:antialiased}
+
+/* scrollbar */
+::-webkit-scrollbar{width:4px}
+::-webkit-scrollbar-track{background:var(--bg)}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px}
+
+/* NAV */
+nav{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 24px;height:60px;
+  border-bottom:1px solid var(--border);
+  background:rgba(12,12,14,0.85);
+  backdrop-filter:blur(16px);
+  position:sticky;top:0;z-index:200;
+}
+.nav-left{display:flex;align-items:center;gap:32px}
+.nav-logo{display:flex;align-items:center;gap:9px;font-size:16px;font-weight:600;letter-spacing:-0.4px;text-decoration:none;color:var(--text)}
+.logo-mark{width:30px;height:30px;background:linear-gradient(135deg,#22c55e,#16a34a);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.nav-links{display:flex;gap:4px}
+.nav-link{padding:6px 12px;border-radius:7px;font-size:13px;font-weight:500;color:var(--text2);cursor:pointer;transition:all 0.15s;border:none;background:none}
+.nav-link:hover,.nav-link.active{background:var(--card);color:var(--text)}
+.nav-right{display:flex;align-items:center;gap:10px}
+.wallet-btn{
+  display:flex;align-items:center;gap:8px;
+  padding:8px 14px;border-radius:8px;
+  font-family:'Geist',sans-serif;font-size:13px;font-weight:500;
+  cursor:pointer;transition:all 0.15s;border:1px solid var(--border2);
+  background:var(--card);color:var(--text);
+}
+.wallet-btn:hover{border-color:var(--green);color:var(--green)}
+.wallet-btn.connected{background:var(--green-dim);border-color:var(--green-border);color:var(--green)}
+.wallet-dot{width:7px;height:7px;border-radius:50%;background:var(--green);box-shadow:0 0 6px var(--green)}
+
+/* PAGES */
+.page{display:none;min-height:calc(100vh - 60px)}
+.page.active{display:block}
+
+/* HERO / SCAN PAGE */
+.scan-page{max-width:780px;margin:0 auto;padding:56px 24px 80px}
+.hero-badge{
+  display:inline-flex;align-items:center;gap:6px;
+  font-size:11px;font-weight:500;color:var(--text2);
+  border:1px solid var(--border2);background:var(--card);
+  padding:5px 12px;border-radius:20px;margin-bottom:28px;letter-spacing:0.2px;
+}
+.badge-dot{width:5px;height:5px;border-radius:50%;background:var(--green);animation:glow 2s ease-in-out infinite}
+@keyframes glow{0%,100%{box-shadow:0 0 0 0 rgba(34,197,94,0.5)}50%{box-shadow:0 0 0 5px rgba(34,197,94,0)}}
+h1{font-size:clamp(36px,6vw,56px);font-weight:700;letter-spacing:-2px;line-height:1.05;margin-bottom:14px}
+h1 span{color:var(--green)}
+.hero-sub{font-size:16px;color:var(--text2);line-height:1.65;margin-bottom:40px;max-width:560px}
+
+/* SEARCH */
+.search-wrap{position:relative;margin-bottom:16px}
+.search-box{
+  display:flex;align-items:center;gap:12px;
+  background:var(--card);border:1px solid var(--border2);
+  border-radius:var(--r2);padding:8px 8px 8px 18px;
+  transition:border-color 0.2s,box-shadow 0.2s;
+}
+.search-box:focus-within{border-color:rgba(34,197,94,0.5);box-shadow:0 0 0 3px rgba(34,197,94,0.08)}
+.search-ico{color:var(--text3);flex-shrink:0}
+.search-input{
+  flex:1;background:transparent;border:none;outline:none;
+  font-family:'Geist',sans-serif;font-size:15px;color:var(--text);padding:8px 0;
+}
+.search-input::placeholder{color:var(--text3)}
+.search-btn{
+  background:var(--green);color:#000;border:none;
+  padding:10px 20px;border-radius:8px;
+  font-family:'Geist',sans-serif;font-size:13px;font-weight:600;
+  cursor:pointer;white-space:nowrap;transition:all 0.15s;
+  display:flex;align-items:center;gap:6px;
+}
+.search-btn:hover{background:#16a34a;transform:translateY(-1px)}
+.search-btn:active{transform:scale(0.98)}
+.search-btn:disabled{opacity:0.35;cursor:not-allowed;transform:none}
+
+/* QUICK TOKENS */
+.quick-label{font-size:11px;color:var(--text3);letter-spacing:0.3px;margin-bottom:8px}
+.quick-tokens{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:40px}
+.quick-token{
+  padding:5px 12px;border-radius:20px;font-size:12px;font-weight:500;
+  border:1px solid var(--border);color:var(--text2);background:var(--card);
+  cursor:pointer;transition:all 0.15s;
+}
+.quick-token:hover{border-color:var(--border2);color:var(--text)}
+
+/* STATUS */
+.status-bar{
+  display:none;align-items:center;gap:10px;
+  padding:12px 16px;background:var(--card);border:1px solid var(--border);
+  border-radius:var(--r);font-size:13px;color:var(--text2);margin-bottom:16px;
+}
+.status-bar.show{display:flex}
+.dots{display:flex;gap:3px}
+.dots span{width:4px;height:4px;border-radius:50%;background:var(--green);animation:db 1.2s ease-in-out infinite}
+.dots span:nth-child(2){animation-delay:.2s}
+.dots span:nth-child(3){animation-delay:.4s}
+@keyframes db{0%,80%,100%{transform:scale(0.7);opacity:0.3}40%{transform:scale(1);opacity:1}}
+
+/* RESULT CARD */
+.result-card{
+  background:var(--card);border:1px solid var(--border);
+  border-radius:var(--r2);overflow:hidden;
+  display:none;animation:riseIn .4s cubic-bezier(.16,1,.3,1);
+}
+.result-card.show{display:block}
+@keyframes riseIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+
+.result-header{
+  display:flex;align-items:flex-start;justify-content:space-between;
+  padding:24px;border-bottom:1px solid var(--border);gap:16px;
+  flex-wrap:wrap;
+}
+.result-token-name{font-size:13px;font-weight:500;color:var(--text2);margin-bottom:4px}
+.result-score{font-size:52px;font-weight:700;letter-spacing:-3px;line-height:1}
+.verdict-pill{
+  display:inline-flex;align-items:center;gap:6px;
+  padding:5px 12px;border-radius:20px;border:1px solid;
+  font-size:12px;font-weight:600;margin-top:10px;letter-spacing:0.3px;
+}
+.verdict-pill.safe{background:var(--green-dim);color:var(--green);border-color:var(--green-border)}
+.verdict-pill.caution{background:var(--amber-dim);color:var(--amber);border-color:var(--amber-border)}
+.verdict-pill.danger{background:var(--red-dim);color:var(--red);border-color:var(--red-border)}
+
+/* Gauge */
+.gauge-side{display:flex;flex-direction:column;align-items:center;gap:8px;flex-shrink:0}
+.gauge-labels{display:flex;justify-content:space-between;width:110px;font-size:10px;color:var(--text3)}
+
+/* Metric bars */
+.metrics-grid{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--border);border-top:1px solid var(--border)}
+.metric-cell{background:var(--card);padding:18px 20px}
+.metric-label{font-size:11px;color:var(--text2);margin-bottom:8px;letter-spacing:0.3px}
+.metric-bar-track{height:4px;background:var(--border2);border-radius:2px;overflow:hidden;margin-bottom:6px}
+.metric-bar-fill{height:100%;border-radius:2px;transition:width 1s ease}
+.metric-val{font-size:18px;font-weight:600}
+
+/* Flags */
+.flags-section{padding:20px 24px;border-top:1px solid var(--border)}
+.section-label{font-size:11px;font-weight:600;color:var(--text3);letter-spacing:1px;text-transform:uppercase;margin-bottom:14px}
+.flags-list{display:flex;flex-direction:column;gap:8px}
+.flag-row{
+  display:flex;align-items:center;gap:10px;
+  padding:10px 14px;border-radius:8px;border:1px solid;
+  font-size:13px;
+}
+.flag-row.safe{background:var(--green-dim);border-color:var(--green-border)}
+.flag-row.warn{background:var(--amber-dim);border-color:var(--amber-border)}
+.flag-row.danger{background:var(--red-dim);border-color:var(--red-border)}
+.flag-icon{font-size:14px;flex-shrink:0}
+.flag-label{font-weight:600;flex-shrink:0}
+.flag-label.safe{color:var(--green)}
+.flag-label.warn{color:var(--amber)}
+.flag-label.danger{color:var(--red)}
+.flag-detail{color:var(--text2);font-size:12px}
+
+/* Analysis */
+.analysis-section{padding:20px 24px;border-top:1px solid var(--border)}
+.analysis-text{font-size:14px;line-height:1.8;color:var(--text2)}
+.cursor{display:inline-block;width:2px;height:13px;background:var(--green);border-radius:1px;vertical-align:middle;animation:blink .9s steps(1) infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+
+/* Top holders (premium) */
+.holders-section{padding:20px 24px;border-top:1px solid var(--border)}
+.holders-table{width:100%;border-collapse:collapse}
+.holders-table th{text-align:left;font-size:10px;font-weight:600;color:var(--text3);letter-spacing:0.8px;text-transform:uppercase;padding:0 0 10px}
+.holders-table td{padding:9px 0;border-top:1px solid var(--border);font-size:13px}
+.holder-addr{font-family:monospace;font-size:12px;color:var(--text2)}
+.holder-label{display:inline-block;padding:2px 8px;border-radius:4px;font-size:10px;font-weight:600}
+.holder-label.dev{background:var(--red-dim);color:var(--red)}
+.holder-label.lp{background:var(--green-dim);color:var(--green)}
+.holder-label.whale{background:var(--amber-dim);color:var(--amber)}
+.holder-label.other{background:var(--card2);color:var(--text2)}
+.holder-pct{font-weight:600;text-align:right}
+
+/* PREMIUM GATE */
+.premium-gate{
+  padding:28px 24px;border-top:1px solid var(--border);
+  text-align:center;
+}
+.gate-title{font-size:15px;font-weight:600;margin-bottom:6px}
+.gate-sub{font-size:13px;color:var(--text2);margin-bottom:20px;line-height:1.6}
+.gate-features{display:flex;justify-content:center;gap:20px;flex-wrap:wrap;margin-bottom:24px}
+.gate-feat{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text2)}
+.gate-feat svg{color:var(--green)}
+.pay-btn{
+  display:inline-flex;align-items:center;gap:8px;
+  background:linear-gradient(135deg,#9945FF,#14F195);
+  color:#000;border:none;padding:11px 24px;border-radius:9px;
+  font-family:'Geist',sans-serif;font-size:13px;font-weight:700;
+  cursor:pointer;transition:opacity 0.15s,transform 0.1s;
+}
+.pay-btn:hover{opacity:0.9;transform:translateY(-1px)}
+.pay-btn:active{transform:scale(0.98)}
+.pay-note{font-size:11px;color:var(--text3);margin-top:10px}
+
+/* RECENT SCANS */
+.recent-section{margin-top:40px}
+.recent-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px;margin-top:14px}
+.recent-card{
+  background:var(--card);border:1px solid var(--border);border-radius:var(--r);
+  padding:14px;cursor:pointer;transition:border-color 0.15s;
+}
+.recent-card:hover{border-color:var(--border2)}
+.recent-ticker{font-size:13px;font-weight:600;margin-bottom:4px}
+.recent-score{font-size:11px;color:var(--text2)}
+.recent-dot{width:6px;height:6px;border-radius:50%;display:inline-block;margin-right:5px}
+
+/* PORTFOLIO PAGE */
+.portfolio-page{max-width:960px;margin:0 auto;padding:40px 24px 80px}
+.page-title{font-size:24px;font-weight:700;letter-spacing:-0.8px;margin-bottom:6px}
+.page-sub{font-size:14px;color:var(--text2);margin-bottom:32px}
+
+.connect-prompt{
+  background:var(--card);border:1px solid var(--border);border-radius:var(--r2);
+  padding:56px 24px;text-align:center;
+}
+.connect-icon{font-size:48px;margin-bottom:16px}
+.connect-title{font-size:18px;font-weight:600;margin-bottom:8px}
+.connect-sub{font-size:14px;color:var(--text2);margin-bottom:24px}
+.connect-big-btn{
+  display:inline-flex;align-items:center;gap:10px;
+  background:linear-gradient(135deg,#9945FF,#14F195);
+  color:#000;border:none;padding:12px 28px;border-radius:10px;
+  font-family:'Geist',sans-serif;font-size:14px;font-weight:700;
+  cursor:pointer;transition:opacity 0.15s,transform 0.1s;
+}
+.connect-big-btn:hover{opacity:0.9;transform:translateY(-1px)}
+
+.portfolio-connected{display:none}
+.portfolio-connected.show{display:block}
+
+.wallet-info-bar{
+  display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;
+  background:var(--card);border:1px solid var(--border);border-radius:var(--r);
+  padding:16px 20px;margin-bottom:24px;
+}
+.wallet-addr{font-family:monospace;font-size:13px;color:var(--text2)}
+.wallet-bal{font-size:13px;font-weight:600;color:var(--green)}
+
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:24px}
+.stat-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:16px 20px}
+.stat-label{font-size:11px;color:var(--text2);margin-bottom:6px;letter-spacing:0.3px}
+.stat-val{font-size:22px;font-weight:700;letter-spacing:-0.8px}
+
+.holdings-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r2);overflow:hidden;margin-bottom:24px}
+.holdings-header{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid var(--border)}
+.holdings-title{font-size:14px;font-weight:600}
+.scan-all-btn{
+  padding:6px 14px;border-radius:7px;border:1px solid var(--border2);
+  background:transparent;color:var(--text);font-family:'Geist',sans-serif;
+  font-size:12px;font-weight:500;cursor:pointer;transition:all 0.15s;
+}
+.scan-all-btn:hover{background:var(--card2);border-color:var(--green);color:var(--green)}
+
+.holdings-table{width:100%;border-collapse:collapse}
+.holdings-table th{text-align:left;font-size:10px;font-weight:600;color:var(--text3);letter-spacing:0.8px;text-transform:uppercase;padding:12px 20px}
+.holdings-table td{padding:14px 20px;border-top:1px solid var(--border);font-size:13px;vertical-align:middle}
+.holdings-table tr:hover td{background:var(--card2)}
+.token-icon{width:28px;height:28px;border-radius:50%;background:var(--card2);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0}
+.token-name-cell{display:flex;align-items:center;gap:10px}
+.token-sym{font-weight:600}
+.token-addr{font-size:11px;color:var(--text3);font-family:monospace}
+.risk-badge{
+  display:inline-flex;align-items:center;gap:4px;
+  padding:3px 9px;border-radius:5px;font-size:11px;font-weight:600;border:1px solid;
+}
+.risk-badge.safe{background:var(--green-dim);color:var(--green);border-color:var(--green-border)}
+.risk-badge.caution{background:var(--amber-dim);color:var(--amber);border-color:var(--amber-border)}
+.risk-badge.danger{background:var(--red-dim);color:var(--red);border-color:var(--red-border)}
+.risk-badge.unknown{background:var(--card2);color:var(--text3);border-color:var(--border)}
+.scan-mini-btn{
+  padding:5px 12px;border-radius:6px;border:1px solid var(--border);
+  background:transparent;color:var(--text2);font-family:'Geist',sans-serif;
+  font-size:11px;font-weight:500;cursor:pointer;transition:all 0.15s;white-space:nowrap;
+}
+.scan-mini-btn:hover{border-color:var(--green);color:var(--green)}
+
+/* TRENDING PAGE */
+.trending-page{max-width:960px;margin:0 auto;padding:40px 24px 80px}
+.trending-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:24px}
+@media(max-width:600px){.trending-grid{grid-template-columns:1fr}}
+.trending-card{
+  background:var(--card);border:1px solid var(--border);border-radius:var(--r2);
+  padding:20px;cursor:pointer;transition:border-color 0.15s;
+}
+.trending-card:hover{border-color:var(--border2)}
+.trending-rank{font-size:11px;color:var(--text3);margin-bottom:10px}
+.trending-name{font-size:15px;font-weight:600;margin-bottom:4px;letter-spacing:-0.3px}
+.trending-meta{font-size:12px;color:var(--text2);margin-bottom:14px}
+.trending-score-row{display:flex;align-items:center;justify-content:space-between}
+.trending-score{font-size:24px;font-weight:700;letter-spacing:-1px}
+.trending-bar-track{height:3px;background:var(--border2);border-radius:2px;overflow:hidden;margin-top:6px}
+.trending-bar-fill{height:100%;border-radius:2px}
+
+/* PAYMENT MODAL */
+.modal-overlay{
+  position:fixed;inset:0;background:rgba(0,0,0,0.7);
+  display:none;align-items:center;justify-content:center;z-index:500;
+  backdrop-filter:blur(4px);
+}
+.modal-overlay.show{display:flex}
+.modal{
+  background:var(--card);border:1px solid var(--border2);border-radius:var(--r2);
+  padding:32px;max-width:440px;width:90%;animation:riseIn .3s ease;
+}
+.modal-title{font-size:18px;font-weight:700;letter-spacing:-0.5px;margin-bottom:6px}
+.modal-sub{font-size:13px;color:var(--text2);margin-bottom:24px;line-height:1.6}
+.modal-price{
+  background:var(--card2);border:1px solid var(--border2);border-radius:10px;
+  padding:20px;text-align:center;margin-bottom:20px;
+}
+.price-amount{font-size:32px;font-weight:700;letter-spacing:-1px;color:var(--green)}
+.price-label{font-size:12px;color:var(--text2);margin-top:4px}
+.modal-features{margin-bottom:24px}
+.modal-feat{display:flex;align-items:center;gap:8px;padding:6px 0;font-size:13px;color:var(--text2)}
+.modal-feat svg{color:var(--green);flex-shrink:0}
+.modal-btns{display:flex;gap:10px}
+.modal-cancel{flex:1;padding:10px;border-radius:8px;border:1px solid var(--border2);background:transparent;color:var(--text2);font-family:'Geist',sans-serif;font-size:13px;font-weight:500;cursor:pointer}
+.modal-cancel:hover{background:var(--card2)}
+.modal-pay{
+  flex:2;padding:10px;border-radius:8px;border:none;
+  background:linear-gradient(135deg,#9945FF,#14F195);
+  color:#000;font-family:'Geist',sans-serif;font-size:13px;font-weight:700;cursor:pointer;
+  transition:opacity 0.15s;
+}
+.modal-pay:hover{opacity:0.9}
+
+/* TX STATUS */
+.tx-status{
+  display:none;align-items:center;gap:10px;
+  padding:12px 16px;border-radius:8px;border:1px solid;
+  font-size:13px;margin-top:12px;
+}
+.tx-status.pending{background:var(--amber-dim);border-color:var(--amber-border);color:var(--amber);display:flex}
+.tx-status.success{background:var(--green-dim);border-color:var(--green-border);color:var(--green);display:flex}
+.tx-status.error{background:var(--red-dim);border-color:var(--red-border);color:var(--red);display:flex}
+
+/* TOAST */
+.toast{
+  position:fixed;bottom:24px;right:24px;z-index:999;
+  background:var(--card2);border:1px solid var(--border2);border-radius:10px;
+  padding:14px 18px;font-size:13px;font-weight:500;
+  display:none;align-items:center;gap:10px;
+  animation:slideUp .3s ease;box-shadow:0 8px 32px rgba(0,0,0,0.4);
+}
+.toast.show{display:flex}
+@keyframes slideUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+/* FOOTER */
+footer{
+  border-top:1px solid var(--border);padding:24px 32px;
+  display:flex;align-items:center;justify-content:space-between;
+  flex-wrap:wrap;gap:12px;font-size:12px;color:var(--text3);
+}
+.footer-logo{font-weight:600;color:var(--text2);letter-spacing:-0.2px}
+
+@media(max-width:640px){
+  nav{padding:0 16px}
+  .nav-links{display:none}
+  .stats-row{grid-template-columns:1fr 1fr}
+  .metrics-grid{grid-template-columns:1fr}
+  .result-header{flex-direction:column}
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-left">
+    <a class="nav-logo" href="#">
+      <div class="logo-mark">🐶</div>
+      RugSniffer
+    </a>
+    <div class="nav-links">
+      <button class="nav-link active" onclick="showPage('scan')">Scanner</button>
+      <button class="nav-link" onclick="showPage('portfolio')">Portfolio</button>
+      <button class="nav-link" onclick="showPage('trending')">Trending</button>
+    </div>
+  </div>
+  <div class="nav-right">
+    <button class="wallet-btn" id="walletBtn" onclick="connectWallet()">
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><rect x="1" y="3" width="12" height="9" rx="2" stroke="currentColor" stroke-width="1.3"/><path d="M1 6h12" stroke="currentColor" stroke-width="1.3"/><circle cx="10.5" cy="9" r="1" fill="currentColor"/></svg>
+      <span id="walletBtnText">Connect Wallet</span>
+    </button>
+  </div>
+</nav>
+
+<!-- ═══ SCAN PAGE ═══ -->
+<div class="page active" id="page-scan">
+<div class="scan-page">
+
+  <div class="hero-badge">
+    <span class="badge-dot"></span>
+    Powered by AI · Solana token security
+  </div>
+  <h1>Sniff before<br>you get <span>wrecked.</span></h1>
+  <p class="hero-sub">Paste any Solana token address or ticker. Get instant AI-powered rug risk analysis — liquidity depth, holder distribution, contract flags and more.</p>
+
+  <div class="search-box">
+    <svg class="search-ico" width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="6.5" cy="6.5" r="4.5" stroke="currentColor" stroke-width="1.4"/><path d="M10 10l3 3" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+    <input class="search-input" id="tokenInput" placeholder="Token address or ticker — e.g. $BONK or So11111..." autocomplete="off" spellcheck="false">
+    <button class="search-btn" id="scanBtn" onclick="runScan()">
+      <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M5.5 1a4.5 4.5 0 100 9 4.5 4.5 0 000-9zM9.5 9.5l2.5 2.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+      Analyze
+    </button>
+  </div>
+
+  <div class="quick-label">Try a token:</div>
+  <div class="quick-tokens">
+    <div class="quick-token" onclick="quickScan('$BONK')">$BONK</div>
+    <div class="quick-token" onclick="quickScan('$WIF')">$WIF</div>
+    <div class="quick-token" onclick="quickScan('$MOODENG')">$MOODENG</div>
+    <div class="quick-token" onclick="quickScan('$SAFEMOON')">$SAFEMOON</div>
+    <div class="quick-token" onclick="quickScan('$ELONDOG')">$ELONDOG</div>
+  </div>
+
+  <div class="status-bar" id="statusBar">
+    <div class="dots"><span></span><span></span><span></span></div>
+    <span id="statusMsg">Scanning blockchain...</span>
+  </div>
+
+  <!-- RESULT -->
+  <div class="result-card" id="resultCard">
+
+    <div class="result-header">
+      <div>
+        <div class="result-token-name" id="rTokenName">—</div>
+        <div class="result-score" id="rScore">—</div>
+        <div id="rVerdictPill" class="verdict-pill safe">
+          <svg width="7" height="7" viewBox="0 0 7 7" fill="currentColor"><circle cx="3.5" cy="3.5" r="3.5"/></svg>
+          <span id="rVerdictText">—</span>
+        </div>
+      </div>
+      <div class="gauge-side">
+        <svg width="120" height="66" viewBox="0 0 120 66" style="overflow:visible">
+          <defs>
+            <linearGradient id="gaugeG" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stop-color="#22c55e"/>
+              <stop offset="50%" stop-color="#f59e0b"/>
+              <stop offset="100%" stop-color="#ef4444"/>
+            </linearGradient>
+          </defs>
+          <path d="M 12 62 A 48 48 0 0 1 108 62" fill="none" stroke="#2a2a30" stroke-width="6" stroke-linecap="round"/>
+          <path id="gaugeFill" d="M 12 62 A 48 48 0 0 1 108 62" fill="none" stroke="url(#gaugeG)" stroke-width="6" stroke-linecap="round" stroke-dasharray="151" stroke-dashoffset="151" style="transition:stroke-dashoffset 1.3s cubic-bezier(.4,0,.2,1)"/>
+          <line id="gaugeNeedle" x1="60" y1="62" x2="60" y2="22" stroke="white" stroke-width="2" stroke-linecap="round" style="transform-origin:60px 62px;transform:rotate(-90deg);transition:transform 1.3s cubic-bezier(.4,0,.2,1)"/>
+          <circle cx="60" cy="62" r="4" fill="white"/>
+        </svg>
+        <div class="gauge-labels"><span>Safe</span><span>Danger</span></div>
+      </div>
+    </div>
+
+    <!-- metrics -->
+    <div class="metrics-grid" id="rMetrics">
+      <div class="metric-cell">
+        <div class="metric-label">Liquidity</div>
+        <div class="metric-bar-track"><div class="metric-bar-fill" id="mLiq" style="width:0%;background:var(--green)"></div></div>
+        <div class="metric-val" id="mLiqVal">—</div>
+      </div>
+      <div class="metric-cell">
+        <div class="metric-label">Holder Distribution</div>
+        <div class="metric-bar-track"><div class="metric-bar-fill" id="mHold" style="width:0%;background:var(--blue)"></div></div>
+        <div class="metric-val" id="mHoldVal">—</div>
+      </div>
+      <div class="metric-cell">
+        <div class="metric-label">Contract Safety</div>
+        <div class="metric-bar-track"><div class="metric-bar-fill" id="mCon" style="width:0%;background:var(--purple)"></div></div>
+        <div class="metric-val" id="mConVal">—</div>
+      </div>
+      <div class="metric-cell">
+        <div class="metric-label">Community Trust</div>
+        <div class="metric-bar-track"><div class="metric-bar-fill" id="mCom" style="width:0%;background:var(--amber)"></div></div>
+        <div class="metric-val" id="mComVal">—</div>
+      </div>
+    </div>
+
+    <!-- flags -->
+    <div class="flags-section">
+      <div class="section-label">Risk Flags</div>
+      <div class="flags-list" id="rFlags"></div>
+    </div>
+
+    <!-- analysis -->
+    <div class="analysis-section">
+      <div class="section-label">AI Analysis</div>
+      <div class="analysis-text" id="rAnalysis"></div>
+    </div>
+
+    <!-- premium gate / holders -->
+    <div id="premiumSection">
+      <div class="premium-gate" id="premiumGate">
+        <div style="font-size:28px;margin-bottom:12px">🔒</div>
+        <div class="gate-title">Deep Analysis — Premium</div>
+        <div class="gate-sub">Unlock full holder distribution, top wallet breakdown, dev wallet tracking, and honeypot detection.</div>
+        <div class="gate-features">
+          <div class="gate-feat"><svg width="13" height="13" viewBox="0 0 13 13" fill="none"><polyline points="2,7 5,10 11,3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>Top holder wallets</div>
+          <div class="gate-feat"><svg width="13" height="13" viewBox="0 0 13 13" fill="none"><polyline points="2,7 5,10 11,3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>Dev wallet flags</div>
+          <div class="gate-feat"><svg width="13" height="13" viewBox="0 0 13 13" fill="none"><polyline points="2,7 5,10 11,3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>Honeypot detection</div>
+          <div class="gate-feat"><svg width="13" height="13" viewBox="0 0 13 13" fill="none"><polyline points="2,7 5,10 11,3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>Mint authority check</div>
+        </div>
+        <button class="pay-btn" onclick="openPayModal()">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 1l1.8 3.6L13 5.3l-3 2.9.7 4.1L7 10.4l-3.7 1.9.7-4.1-3-2.9 4.2-.7z" fill="currentColor"/></svg>
+          Unlock Deep Analysis — 0.01 SOL
+        </button>
+        <div class="pay-note">One-time payment · Non-custodial · Direct to treasury</div>
+      </div>
+      <!-- premium content (hidden until paid) -->
+      <div class="holders-section" id="holdersSection" style="display:none">
+        <div class="section-label">Top Holders</div>
+        <table class="holders-table">
+          <thead><tr><th>#</th><th>Address</th><th>Label</th><th style="text-align:right">%</th></tr></thead>
+          <tbody id="holdersBody"></tbody>
+        </table>
+      </div>
+    </div>
+
+  </div><!-- /result-card -->
+
+  <!-- recent scans -->
+  <div class="recent-section" id="recentSection" style="display:none">
+    <div class="section-label">Recent Scans</div>
+    <div class="recent-grid" id="recentGrid"></div>
+  </div>
+
+</div>
+</div><!-- /scan page -->
+
+<!-- ═══ PORTFOLIO PAGE ═══ -->
+<div class="page" id="page-portfolio">
+<div class="portfolio-page">
+  <div class="page-title">Portfolio</div>
+  <div class="page-sub">Connect your Phantom wallet to view holdings and scan them for risk.</div>
+
+  <div class="connect-prompt" id="portfolioConnectPrompt">
+    <div class="connect-icon">👻</div>
+    <div class="connect-title">Connect your Phantom wallet</div>
+    <div class="connect-sub">We only read your public wallet data.<br>No signing required, no funds at risk.</div>
+    <button class="connect-big-btn" onclick="connectWallet()">
+      <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><rect x="2" y="4" width="14" height="11" rx="2.5" stroke="currentColor" stroke-width="1.5"/><path d="M2 8h14" stroke="currentColor" stroke-width="1.5"/><circle cx="13" cy="11.5" r="1.2" fill="currentColor"/></svg>
+      Connect Phantom
+    </button>
+  </div>
+
+  <div class="portfolio-connected" id="portfolioConnected">
+    <div class="wallet-info-bar">
+      <div>
+        <div style="font-size:11px;color:var(--text3);margin-bottom:3px">Connected wallet</div>
+        <div class="wallet-addr" id="portfolioAddr">—</div>
+      </div>
+      <div class="wallet-bal" id="portfolioBal">— SOL</div>
+    </div>
+
+    <div class="stats-row">
+      <div class="stat-card">
+        <div class="stat-label">Total tokens</div>
+        <div class="stat-val" id="statTokens">—</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">At risk</div>
+        <div class="stat-val" style="color:var(--red)" id="statRisk">—</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Safe</div>
+        <div class="stat-val" style="color:var(--green)" id="statSafe">—</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Unscanned</div>
+        <div class="stat-val" style="color:var(--text2)" id="statUnscan">—</div>
+      </div>
+    </div>
+
+    <div class="holdings-card">
+      <div class="holdings-header">
+        <div class="holdings-title">Token Holdings</div>
+        <button class="scan-all-btn" onclick="scanAllHoldings()">Scan All Tokens</button>
+      </div>
+      <table class="holdings-table">
+        <thead>
+          <tr>
+            <th>Token</th>
+            <th>Balance</th>
+            <th>Risk</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="holdingsBody"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+</div><!-- /portfolio page -->
+
+<!-- ═══ TRENDING PAGE ═══ -->
+<div class="page" id="page-trending">
+<div class="trending-page">
+  <div class="page-title">Trending Tokens</div>
+  <div class="page-sub">Most-scanned tokens on RugSniffer in the last 24 hours.</div>
+  <div class="trending-grid" id="trendingGrid"></div>
+</div>
+</div>
+
+<!-- PAYMENT MODAL -->
+<div class="modal-overlay" id="payModal" onclick="closePayModal(event)">
+  <div class="modal">
+    <div class="modal-title">Unlock Deep Analysis</div>
+    <div class="modal-sub">One-time payment of 0.01 SOL sent directly to the RugSniffer treasury. Non-custodial — we never hold your funds.</div>
+    <div class="modal-price">
+      <div class="price-amount">0.01 SOL</div>
+      <div class="price-label">≈ $1.50 · One scan · Instant unlock</div>
+    </div>
+    <div class="modal-features">
+      <div class="modal-feat"><svg width="13" height="13" viewBox="0 0 13 13" fill="none"><polyline points="2,7 5,10 11,3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>Full top holder breakdown with wallet labels</div>
+      <div class="modal-feat"><svg width="13" height="13" viewBox="0 0 13 13" fill="none"><polyline points="2,7 5,10 11,3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>Dev wallet activity & concentration flags</div>
+      <div class="modal-feat"><svg width="13" height="13" viewBox="0 0 13 13" fill="none"><polyline points="2,7 5,10 11,3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>Honeypot & freeze authority detection</div>
+      <div class="modal-feat"><svg width="13" height="13" viewBox="0 0 13 13" fill="none"><polyline points="2,7 5,10 11,3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>Mint authority status</div>
+    </div>
+    <div class="tx-status" id="txStatus"></div>
+    <div class="modal-btns">
+      <button class="modal-cancel" onclick="document.getElementById('payModal').classList.remove('show')">Cancel</button>
+      <button class="modal-pay" id="modalPayBtn" onclick="processPayment()">
+        Pay with Phantom
+      </button>
+    </div>
+    <div class="pay-note" style="text-align:center;margin-top:12px">Wallet must be connected · Transaction visible on-chain</div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast">
+  <span id="toastIcon">✓</span>
+  <span id="toastMsg">Done</span>
+</div>
+
+<footer>
+  <div class="footer-logo">RugSniffer</div>
+  <div>Not financial advice · Always DYOR · Powered by $SNIFF</div>
+</footer>
+
+<script>
+// ══════════════════════════════════
+// STATE
+// ══════════════════════════════════
+let walletAddress = null;
+let walletProvider = null;
+let currentToken = null;
+let currentResult = null;
+let isPremiumUnlocked = false;
+let recentScans = JSON.parse(localStorage.getItem('rs_recent') || '[]');
+
+const TREASURY_WALLET = 'YOUR_SOLANA_WALLET_ADDRESS'; // <-- replace with your wallet
+
+const statusMsgs = [
+  'Sniffing the blockchain...',
+  'Checking dev wallet activity...',
+  'Analyzing liquidity pools...',
+  'Scanning token contract...',
+  'Running rug probability model...',
+  'Almost there...',
+];
+
+// ══════════════════════════════════
+// NAVIGATION
+// ══════════════════════════════════
+function showPage(name) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+  document.getElementById('page-' + name).classList.add('active');
+  document.querySelectorAll('.nav-link').forEach(l => {
+    if (l.textContent.toLowerCase().includes(name === 'scan' ? 'scan' : name)) l.classList.add('active');
+  });
+  if (name === 'trending') renderTrending();
+  if (name === 'portfolio' && walletAddress) showPortfolio();
+}
+
+// ══════════════════════════════════
+// WALLET
+// ══════════════════════════════════
+async function connectWallet() {
+  if (walletAddress) {
+    walletAddress = null;
+    walletProvider = null;
+    document.getElementById('walletBtn').className = 'wallet-btn';
+    document.getElementById('walletBtn').innerHTML = `<svg width="14" height="14" viewBox="0 0 14 14" fill="none"><rect x="1" y="3" width="12" height="9" rx="2" stroke="currentColor" stroke-width="1.3"/><path d="M1 6h12" stroke="currentColor" stroke-width="1.3"/><circle cx="10.5" cy="9" r="1" fill="currentColor"/></svg><span id="walletBtnText">Connect Wallet</span>`;
+    document.getElementById('portfolioConnected').classList.remove('show');
+    document.getElementById('portfolioConnectPrompt').style.display = '';
+    showToast('👋', 'Wallet disconnected');
+    return;
+  }
+  const provider = window.phantom?.solana || window.solana;
+  if (!provider?.isPhantom) {
+    showToast('👻', 'Phantom not found — install at phantom.app');
+    window.open('https://phantom.app', '_blank');
+    return;
+  }
+  try {
+    const resp = await provider.connect();
+    walletAddress = resp.publicKey.toString();
+    walletProvider = provider;
+    const short = walletAddress.slice(0, 4) + '...' + walletAddress.slice(-4);
+    document.getElementById('walletBtn').className = 'wallet-btn connected';
+    document.getElementById('walletBtn').innerHTML = `<div class="wallet-dot"></div><span>${short}</span>`;
+    showToast('✓', 'Wallet connected');
+    if (document.getElementById('page-portfolio').classList.contains('active')) showPortfolio();
+  } catch (e) {
+    showToast('✕', 'Connection rejected');
+  }
+}
+
+// ══════════════════════════════════
+// SCANNER
+// ══════════════════════════════════
+function quickScan(ticker) {
+  document.getElementById('tokenInput').value = ticker;
+  runScan();
+}
+
+async function runScan() {
+  const input = document.getElementById('tokenInput').value.trim();
+  if (!input) return;
+  currentToken = input;
+  isPremiumUnlocked = false;
+
+  const btn = document.getElementById('scanBtn');
+  const sb = document.getElementById('statusBar');
+  const sm = document.getElementById('statusMsg');
+  const rc = document.getElementById('resultCard');
+
+  btn.disabled = true;
+  rc.classList.remove('show');
+  sb.classList.add('show');
+  document.getElementById('premiumGate').style.display = '';
+  document.getElementById('holdersSection').style.display = 'none';
+
+  let mi = 0;
+  sm.textContent = statusMsgs[0];
+  const mint = setInterval(() => { mi = (mi + 1) % statusMsgs.length; sm.textContent = statusMsgs[mi]; }, 1400);
+
+  try {
+    const res = await fetch('/api/analyze', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ token: input, wallet: walletAddress }),
+    });
+    clearInterval(mint);
+    if (!res.ok) throw new Error('err');
+    const data = await res.json();
+    currentResult = data;
+    renderResult(data, input);
+    addRecentScan(input, data);
+  } catch (e) {
+    clearInterval(mint);
+    showToast('✕', 'Analysis failed — try again');
+  }
+
+  sb.classList.remove('show');
+  btn.disabled = false;
+}
+
+function renderResult(data, token) {
+  const pct = Math.max(0, Math.min(100, Math.round(data.rugProbability || 0)));
+  const verdict = (data.verdict || 'CAUTION').toUpperCase();
+  const rc = document.getElementById('resultCard');
+
+  document.getElementById('rTokenName').textContent = token;
+  const scoreEl = document.getElementById('rScore');
+  scoreEl.textContent = pct + '%';
+  scoreEl.style.color = pct > 75 ? 'var(--red)' : pct > 40 ? 'var(--amber)' : 'var(--green)';
+
+  const vClass = pct > 75 ? 'danger' : pct > 40 ? 'caution' : 'safe';
+  document.getElementById('rVerdictPill').className = 'verdict-pill ' + vClass;
+  document.getElementById('rVerdictText').textContent = verdict + ' · ' + (data.riskLevel || '');
+
+  // gauge
+  setTimeout(() => {
+    document.getElementById('gaugeFill').style.strokeDashoffset = 151 - (pct / 100) * 151;
+    document.getElementById('gaugeNeedle').style.transform = `rotate(${-90 + (pct / 100) * 180}deg)`;
+  }, 80);
+
+  // metrics
+  const m = data.metrics || {};
+  setMetric('mLiq', 'mLiqVal', m.liquidityScore, 'var(--green)');
+  setMetric('mHold', 'mHoldVal', m.holderScore, 'var(--blue)');
+  setMetric('mCon', 'mConVal', m.contractScore, 'var(--purple)');
+  setMetric('mCom', 'mComVal', m.communityScore, 'var(--amber)');
+
+  // flags
+  const flagsEl = document.getElementById('rFlags');
+  flagsEl.innerHTML = '';
+  (data.flags || []).forEach(f => {
+    const icons = { safe: '✓', warn: '⚠', danger: '✕' };
+    flagsEl.innerHTML += `<div class="flag-row ${f.severity}">
+      <span class="flag-icon">${icons[f.severity] || '•'}</span>
+      <span class="flag-label ${f.severity}">${f.label}</span>
+      <span class="flag-detail">${f.detail}</span>
+    </div>`;
+  });
+
+  // analysis stream
+  const ae = document.getElementById('rAnalysis');
+  ae.innerHTML = '<span class="cursor"></span>';
+  const words = (data.analysis || data.summary || '').split(' ');
+  let wi = 0;
+  const stream = setInterval(() => {
+    if (wi >= words.length) { clearInterval(stream); ae.textContent = words.join(' '); return; }
+    ae.innerHTML = words.slice(0, wi + 1).join(' ') + ' <span class="cursor"></span>';
+    wi++;
+  }, 50);
+
+  rc.classList.add('show');
+}
+
+function setMetric(barId, valId, score, color) {
+  const s = Math.max(0, Math.min(100, Math.round(score || 0)));
+  setTimeout(() => {
+    document.getElementById(barId).style.width = s + '%';
+    document.getElementById(barId).style.background = color;
+  }, 200);
+  document.getElementById(valId).textContent = s + '/100';
+  document.getElementById(valId).style.color = s > 60 ? 'var(--green)' : s > 35 ? 'var(--amber)' : 'var(--red)';
+}
+
+// ══════════════════════════════════
+// RECENT SCANS
+// ══════════════════════════════════
+function addRecentScan(token, data) {
+  recentScans = recentScans.filter(r => r.token !== token);
+  recentScans.unshift({ token, pct: Math.round(data.rugProbability || 0), verdict: data.verdict });
+  if (recentScans.length > 8) recentScans = recentScans.slice(0, 8);
+  localStorage.setItem('rs_recent', JSON.stringify(recentScans));
+  renderRecentScans();
+}
+
+function renderRecentScans() {
+  if (!recentScans.length) return;
+  document.getElementById('recentSection').style.display = '';
+  const grid = document.getElementById('recentGrid');
+  grid.innerHTML = '';
+  recentScans.forEach(s => {
+    const c = s.pct > 75 ? 'var(--red)' : s.pct > 40 ? 'var(--amber)' : 'var(--green)';
+    grid.innerHTML += `<div class="recent-card" onclick="quickScan('${s.token}')">
+      <div class="recent-ticker">${s.token}</div>
+      <div class="recent-score">
+        <span class="recent-dot" style="background:${c}"></span>
+        <span style="color:${c};font-weight:600">${s.pct}%</span>
+        <span style="color:var(--text3)"> rug probability</span>
+      </div>
+    </div>`;
+  });
+}
+
+// ══════════════════════════════════
+// PAYMENT FLOW
+// ══════════════════════════════════
+function openPayModal() {
+  if (!walletAddress) {
+    showToast('👻', 'Connect your wallet first');
+    connectWallet();
+    return;
+  }
+  document.getElementById('txStatus').className = 'tx-status';
+  document.getElementById('txStatus').innerHTML = '';
+  document.getElementById('modalPayBtn').disabled = false;
+  document.getElementById('payModal').classList.add('show');
+}
+
+function closePayModal(e) {
+  if (e.target.id === 'payModal') document.getElementById('payModal').classList.remove('show');
+}
+
+async function processPayment() {
+  if (!walletProvider) { showToast('👻', 'Connect wallet first'); return; }
+
+  const txEl = document.getElementById('txStatus');
+  const payBtn = document.getElementById('modalPayBtn');
+  payBtn.disabled = true;
+
+  txEl.className = 'tx-status pending';
+  txEl.innerHTML = `<div class="dots"><span></span><span></span><span></span></div> Waiting for Phantom confirmation...`;
+
+  try {
+    // Build a Solana transfer of 0.01 SOL
+    // Using @solana/web3.js loaded from CDN
+    const { Connection, PublicKey, Transaction, SystemProgram, LAMPORTS_PER_SOL } = window.solanaWeb3;
+
+    const connection = new Connection('https://api.mainnet-beta.solana.com', 'confirmed');
+    const fromPubkey = new PublicKey(walletAddress);
+    const toPubkey = new PublicKey(TREASURY_WALLET);
+
+    const { blockhash } = await connection.getLatestBlockhash();
+    const tx = new Transaction({ recentBlockhash: blockhash, feePayer: fromPubkey });
+    tx.add(SystemProgram.transfer({
+      fromPubkey,
+      toPubkey,
+      lamports: Math.round(0.01 * LAMPORTS_PER_SOL),
+    }));
+
+    const signed = await walletProvider.signTransaction(tx);
+    const sig = await connection.sendRawTransaction(signed.serialize());
+    await connection.confirmTransaction(sig, 'confirmed');
+
+    txEl.className = 'tx-status success';
+    txEl.innerHTML = `✓ Payment confirmed · <a href="https://solscan.io/tx/${sig}" target="_blank" style="color:var(--green);text-decoration:underline">View on Solscan</a>`;
+
+    // Unlock premium
+    setTimeout(() => {
+      document.getElementById('payModal').classList.remove('show');
+      unlockPremium();
+    }, 2000);
+
+  } catch (e) {
+    console.error(e);
+    txEl.className = 'tx-status error';
+    txEl.innerHTML = '✕ ' + (e.message.includes('rejected') ? 'Transaction rejected' : 'Transaction failed — ' + e.message.slice(0, 60));
+    payBtn.disabled = false;
+  }
+}
+
+async function unlockPremium() {
+  isPremiumUnlocked = true;
+  showToast('✓', 'Deep analysis unlocked!');
+  document.getElementById('premiumGate').style.display = 'none';
+
+  // Re-scan with premium flag
+  if (!currentToken) return;
+  const res = await fetch('/api/analyze', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ token: currentToken, wallet: walletAddress, isPremium: true }),
+  });
+  if (!res.ok) return;
+  const data = await res.json();
+
+  // Render holders
+  const holders = data.topHolders || [];
+  const tbody = document.getElementById('holdersBody');
+  tbody.innerHTML = '';
+  holders.forEach((h, i) => {
+    const labelClass = h.label?.toLowerCase().includes('dev') ? 'dev' : h.label?.toLowerCase().includes('lp') ? 'lp' : h.pct > 10 ? 'whale' : 'other';
+    tbody.innerHTML += `<tr>
+      <td style="color:var(--text3)">${i + 1}</td>
+      <td><span class="holder-addr">${h.address}</span></td>
+      <td><span class="holder-label ${labelClass}">${h.label}</span></td>
+      <td class="holder-pct" style="color:${h.pct > 15 ? 'var(--red)' : 'var(--text)'}">${h.pct}%</td>
+    </tr>`;
+  });
+  document.getElementById('holdersSection').style.display = '';
+}
+
+// ══════════════════════════════════
+// PORTFOLIO
+// ══════════════════════════════════
+const MOCK_HOLDINGS = [
+  { sym: 'SOL', name: 'Solana', bal: '4.21', addr: 'So11111...1112', risk: null },
+  { sym: 'BONK', name: 'Bonk', bal: '1,200,000', addr: 'DezXAZ8z...7Pr', risk: null },
+  { sym: 'WIF', name: 'dogwifhat', bal: '340', addr: 'EKpQGSJtjM...NtH', risk: null },
+  { sym: 'MOODENG', name: 'Moo Deng', bal: '50,000', addr: 'ED5nyyWEzp...aRV', risk: null },
+  { sym: 'ELONDOGE', name: 'ElonDoge', bal: '9,999,999', addr: 'AaBbCcDdEe...XyZ', risk: null },
+];
+
+function showPortfolio() {
+  document.getElementById('portfolioConnectPrompt').style.display = 'none';
+  document.getElementById('portfolioConnected').classList.add('show');
+  const short = walletAddress.slice(0, 8) + '...' + walletAddress.slice(-8);
+  document.getElementById('portfolioAddr').textContent = short;
+  document.getElementById('portfolioBal').textContent = '4.21 SOL';
+  document.getElementById('statTokens').textContent = MOCK_HOLDINGS.length;
+  document.getElementById('statRisk').textContent = '0';
+  document.getElementById('statSafe').textContent = '0';
+  document.getElementById('statUnscan').textContent = MOCK_HOLDINGS.length;
+  renderHoldings();
+}
+
+function renderHoldings() {
+  const tbody = document.getElementById('holdingsBody');
+  tbody.innerHTML = '';
+  MOCK_HOLDINGS.forEach((h, i) => {
+    const riskHtml = h.risk
+      ? `<span class="risk-badge ${h.risk.class}">${h.risk.label}</span>`
+      : `<span class="risk-badge unknown">Unscanned</span>`;
+    const btnHtml = h.risk
+      ? `<span style="font-size:11px;color:var(--text3)">Scanned</span>`
+      : `<button class="scan-mini-btn" onclick="scanHolding(${i})">Scan</button>`;
+    tbody.innerHTML += `<tr>
+      <td><div class="token-name-cell">
+        <div class="token-icon" style="background:${tokenColor(h.sym)};color:#000">${h.sym.slice(0,2)}</div>
+        <div><div class="token-sym">${h.sym}</div><div class="token-addr">${h.addr}</div></div>
+      </div></td>
+      <td style="color:var(--text2)">${h.bal}</td>
+      <td>${riskHtml}</td>
+      <td>${btnHtml}</td>
+    </tr>`;
+  });
+}
+
+function tokenColor(sym) {
+  const colors = ['#14F195','#9945FF','#00C2FF','#FFB800','#FF6B6B'];
+  return colors[sym.charCodeAt(0) % colors.length];
+}
+
+async function scanHolding(idx) {
+  const h = MOCK_HOLDINGS[idx];
+  showToast('🔍', `Scanning ${h.sym}...`);
+  try {
+    const res = await fetch('/api/analyze', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ token: h.sym, wallet: walletAddress }),
+    });
+    const data = await res.json();
+    const pct = Math.round(data.rugProbability || 0);
+    MOCK_HOLDINGS[idx].risk = {
+      class: pct > 75 ? 'danger' : pct > 40 ? 'caution' : 'safe',
+      label: pct > 75 ? 'HIGH RISK' : pct > 40 ? 'CAUTION' : 'SAFE',
+    };
+    renderHoldings();
+    updateStats();
+    showToast('✓', `${h.sym} scanned — ${pct}% rug risk`);
+  } catch (e) {
+    showToast('✕', 'Scan failed');
+  }
+}
+
+async function scanAllHoldings() {
+  for (let i = 0; i < MOCK_HOLDINGS.length; i++) {
+    if (!MOCK_HOLDINGS[i].risk) await scanHolding(i);
+    await new Promise(r => setTimeout(r, 600));
+  }
+}
+
+function updateStats() {
+  const scanned = MOCK_HOLDINGS.filter(h => h.risk);
+  document.getElementById('statRisk').textContent = scanned.filter(h => h.risk.class === 'danger').length;
+  document.getElementById('statSafe').textContent = scanned.filter(h => h.risk.class === 'safe').length;
+  document.getElementById('statUnscan').textContent = MOCK_HOLDINGS.filter(h => !h.risk).length;
+}
+
+// ══════════════════════════════════
+// TRENDING
+// ══════════════════════════════════
+const trendingData = [
+  { name: '$BONK', meta: 'Solana memecoin · 2.1M scans', pct: 12, verdict: 'safe' },
+  { name: '$WIF', meta: 'dogwifhat · 1.8M scans', pct: 18, verdict: 'safe' },
+  { name: '$MOODENG', meta: 'Hippo memecoin · 940K scans', pct: 31, verdict: 'caution' },
+  { name: '$POPCAT', meta: 'Pop cat · 870K scans', pct: 22, verdict: 'safe' },
+  { name: '$ELONDOGE', meta: 'New launch · 120K scans', pct: 87, verdict: 'danger' },
+  { name: '$SAFEMOON2', meta: 'Relaunched · 98K scans', pct: 94, verdict: 'danger' },
+  { name: '$MOONCAT', meta: '48h old · 76K scans', pct: 71, verdict: 'caution' },
+  { name: '$JUPITER', meta: 'DEX token · 310K scans', pct: 9, verdict: 'safe' },
+];
+
+function renderTrending() {
+  const grid = document.getElementById('trendingGrid');
+  grid.innerHTML = '';
+  trendingData.forEach((t, i) => {
+    const c = t.pct > 75 ? 'var(--red)' : t.pct > 40 ? 'var(--amber)' : 'var(--green)';
+    grid.innerHTML += `<div class="trending-card" onclick="quickScanFromTrending('${t.name}')">
+      <div class="trending-rank">Rank #${i + 1}</div>
+      <div class="trending-name">${t.name}</div>
+      <div class="trending-meta">${t.meta}</div>
+      <div class="trending-score-row">
+        <div>
+          <div class="trending-score" style="color:${c}">${t.pct}%</div>
+          <div style="font-size:11px;color:var(--text3)">rug probability</div>
+        </div>
+        <span class="risk-badge ${t.verdict}">${t.verdict.toUpperCase()}</span>
+      </div>
+      <div class="trending-bar-track"><div class="trending-bar-fill" style="width:${t.pct}%;background:${c}"></div></div>
+    </div>`;
+  });
+}
+
+function quickScanFromTrending(name) {
+  showPage('scan');
+  document.getElementById('tokenInput').value = name;
+  runScan();
+}
+
+// ══════════════════════════════════
+// TOAST
+// ══════════════════════════════════
+let toastTimer;
+function showToast(icon, msg) {
+  clearTimeout(toastTimer);
+  document.getElementById('toastIcon').textContent = icon;
+  document.getElementById('toastMsg').textContent = msg;
+  document.getElementById('toast').classList.add('show');
+  toastTimer = setTimeout(() => document.getElementById('toast').classList.remove('show'), 3000);
+}
+
+// ══════════════════════════════════
+// INIT
+// ══════════════════════════════════
+document.getElementById('tokenInput').addEventListener('keydown', e => { if (e.key === 'Enter') runScan(); });
+renderRecentScans();
+
+// Load solana/web3.js for payments
+const s = document.createElement('script');
+s.src = 'https://unpkg.com/@solana/web3.js@latest/lib/index.iife.min.js';
+s.onload = () => { window.solanaWeb3 = window.solanaWeb3 || solanaWeb3; };
+document.head.appendChild(s);
+
+// Auto-detect existing wallet connection
+window.addEventListener('load', async () => {
+  const provider = window.phantom?.solana || window.solana;
+  if (provider?.isPhantom) {
+    try {
+      const resp = await provider.connect({ onlyIfTrusted: true });
+      walletAddress = resp.publicKey.toString();
+      walletProvider = provider;
+      const short = walletAddress.slice(0, 4) + '...' + walletAddress.slice(-4);
+      document.getElementById('walletBtn').className = 'wallet-btn connected';
+      document.getElementById('walletBtn').innerHTML = `<div class="wallet-dot"></div><span>${short}</span>`;
+    } catch {}
+  }
+});
+</script>
+</body>
+</html>

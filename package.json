@@ -1,0 +1,17 @@
+{
+  "name": "rugsniffer-app",
+  "version": "1.0.0",
+  "description": "RugSniffer — Solana token security DeFi app",
+  "private": true,
+  "scripts": {
+    "start": "node server.js",
+    "dev": "vercel dev",
+    "deploy": "vercel deploy --prod"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "@solana/web3.js": "^1.95.0"
+  }
+}
